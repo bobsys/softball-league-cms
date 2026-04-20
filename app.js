@@ -1,6 +1,6 @@
 // Initialize Supabase
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CXlvnbzmTyV_HuRVJNnB1A_SjRqfO2K';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- DOM ELEMENTS ---
