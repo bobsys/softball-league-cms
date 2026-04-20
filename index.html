@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Softball League Central</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <nav class="container">
+        <ul><li><strong>Softball League</strong></li></ul>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="admin.html" class="outline">Admin Login</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section id="teams-section">
+            <h2>League Teams</h2>
+            <div id="teams-list" class="grid">
+                <!-- Teams will be injected here -->
+                Loading teams...
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="schedule-section">
+            <h2>Upcoming Games & Results</h2>
+            <figure>
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Home</th>
+                            <th>Away</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="games-list">
+                        <!-- Games injected here -->
+                    </tbody>
+                </table>
+            </figure>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>

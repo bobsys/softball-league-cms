@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>League CMS - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body class="container">
+    <h1>League Admin CMS</h1>
+    
+    <section>
+        <h3>Add New Team</h3>
+        <form id="team-form">
+            <input type="text" id="team-name" placeholder="Team Name" required>
+            <input type="text" id="coach-name" placeholder="Coach Name">
+            <button type="submit">Create Team</button>
+        </form>
+    </section>
+
+    <section>
+        <h3>Add Player to Team</h3>
+        <form id="player-form">
+            <select id="team-select" required>
+                <option value="">Select Team...</option>
+            </select>
+            <input type="text" id="player-name" placeholder="Player Name" required>
+            <input type="text" id="player-pos" placeholder="Position (e.g. Shortstop)">
+            <input type="number" id="player-age" placeholder="Age">
+            <input type="tel" id="player-phone" placeholder="Phone Number">
+            <button type="submit">Add Player</button>
+        </form>
+    </section>
+
+    <a href="index.html">← Back to Public Site</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
