@@ -2,113 +2,91 @@
 const SUPABASE_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CXlvnbzmTyV_HuRVJNnB1A_SjRqfO2K';
 
-// Declare db variable in the global scope
 let db;
 
-// 2. INITIALIZATION FUNCTION
+// 2. INITIALIZATION
 function initSupabase() {
     try {
-        // Create the client using the global 'supabase' object from the CDN script
         db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase connection initialized.");
-        
-        // Now that db is defined, start the app logic
         startApp();
     } catch (err) {
-        console.error("Failed to initialize Supabase. Check your URL and Key.", err);
+        console.error("Connection error:", err);
     }
 }
 
-// 3. DOM ELEMENTS
-const getEl = (id) => document.getElementById(id);
-
-// 4. APP LOGIC (Only runs once db is defined)
+// 3. MAIN APP LOGIC
 async function startApp() {
-    const teamsList = getEl('teams-list');
-    const gamesList = getEl('games-list');
-    const teamForm = getEl('team-form');
-    const playerForm = getEl('player-form');
-    const teamSelect = getEl('team-select');
+    const teamsList = document.getElementById('teams-list');
+    const teamSelect = document.getElementById('team-select');
+    const teamForm = document.getElementById('team-form');
+    const playerForm = document.getElementById('player-form');
 
-    // FETCH TEAMS
-    if (teamsList) {
+    // --- FETCH TEAMS ---
+    if (teamsList || teamSelect) {
         const { data, error } = await db.from('teams').select('*');
-        if (error) console.error(error);
-        else if (data.length === 0) teamsList.innerHTML = 'No teams found.';
-        else {
-teamsList.innerHTML = data.map(team => `
-    <article class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition group">
-        <div class="flex justify-between items-start mb-4">
-            <div class="bg-blue-50 p-2 rounded-lg text-blue-600">
-                <i data-lucide="shield" class="w-5 h-5"></i>
-            </div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active</span>
-        </div>
-        <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition">${team.name}</h3>
-        <p class="text-xs text-slate-500 mt-1">Coach: ${team.coach_name || 'N/A'}</p>
-        <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-             <span class="text-[10px] font-bold text-slate-400">2025 SEASON</span>
-             <button class="text-xs font-semibold text-blue-600 hover:underline">View Roster</button>
-        </div>
-    </article>
-`).join('');
-lucide.createIcons(); // Refresh icons after injecting HTML        }
-    }
-
-    // FETCH GAMES
-    if (gamesList) {
-        const { data, error } = await db.from('games').select('*, home:home_team_id(name), away:away_team_id(name)');
-        if (error) console.error(error);
-        else {
-            gamesList.innerHTML = data.map(game => `
-                <tr>
-                    <td>${new Date(game.game_date).toLocaleDateString()}</td>
-                    <td>${game.home?.name || 'Home'}</td>
-                    <td>${game.away?.name || 'Away'}</td>
-                    <td>${game.home_score} - ${game.away_score}</td>
-                </tr>
-            `).join('');
+        
+        if (error) {
+            console.error(error);
+        } else {
+            // Render to Public Homepage
+            if (teamsList) {
+                if (data.length === 0) {
+                    teamsList.innerHTML = '<p class="text-slate-400 text-sm">No teams found.</p>';
+                } else {
+                    teamsList.innerHTML = data.map(team => `
+                        <article class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
+                                    <i data-lucide="shield" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <h3 class="font-bold text-slate-800 dark:text-white">${team.name}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Coach: ${team.coach_name || 'N/A'}</p>
+                            <div class="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-slate-400">REGULAR SEASON</span>
+                                <button class="text-xs font-semibold text-blue-600 dark:text-blue-400">Roster</button>
+                            </div>
+                        </article>
+                    `).join('');
+                    lucide.createIcons();
+                }
+            }
+            // Populate Admin Dropdown
+            if (teamSelect) {
+                teamSelect.innerHTML = '<option value="">Select Team...</option>' + 
+                    data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            }
         }
     }
 
-    // POPULATE DROPDOWN
-    if (teamSelect) {
-        const { data } = await db.from('teams').select('id, name');
-        if (data) {
-            teamSelect.innerHTML = '<option value="">Select Team...</option>' + 
-                data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-        }
-    }
-
-    // CREATE TEAM
+    // --- ADD TEAM ---
     if (teamForm) {
         teamForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = getEl('team-name').value;
-            const coach = getEl('coach-name').value;
+            const name = document.getElementById('team-name').value;
+            const coach = document.getElementById('coach-name').value;
             const { error } = await db.from('teams').insert([{ name, coach_name: coach }]);
             if (error) alert(error.message);
-            else { alert('Team created!'); location.reload(); }
+            else location.reload();
         });
     }
 
-    // CREATE PLAYER
+    // --- ADD PLAYER ---
     if (playerForm) {
         playerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const { error } = await db.from('players').insert([{ 
-                team_id: parseInt(getEl('team-select').value), 
-                name: getEl('player-name').value, 
-                position: getEl('player-pos').value, 
-                age: parseInt(getEl('player-age').value), 
-                phone_number: getEl('player-phone').value 
-            }]);
+            const payload = {
+                team_id: parseInt(document.getElementById('team-select').value),
+                name: document.getElementById('player-name').value,
+                position: document.getElementById('player-pos').value,
+                age: parseInt(document.getElementById('player-age').value),
+                phone_number: document.getElementById('player-phone').value
+            };
+            const { error } = await db.from('players').insert([payload]);
             if (error) alert(error.message);
             else { alert('Player added!'); playerForm.reset(); }
         });
     }
 }
 
-// 5. RUN INITIALIZATION
-// We wait for the window to load to ensure the Supabase CDN script is fully ready
 window.addEventListener('load', initSupabase);
