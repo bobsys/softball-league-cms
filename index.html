@@ -3,50 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Softball League Central</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>Softball League | Community Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    </style>
 </head>
 <body>
-    <nav class="container">
-        <ul><li><strong>Softball League</strong></li></ul>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="admin.html" class="outline">Admin Login</a></li>
-        </ul>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 py-3">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 p-1.5 rounded-lg text-white">
+                    <i data-lucide="trophy" class="w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-slate-800 tracking-tight text-lg">SoftballCentral</span>
+            </div>
+            <div class="flex gap-6 text-sm font-medium text-slate-600">
+                <a href="index.html" class="hover:text-blue-600">Home</a>
+                <a href="#teams" class="hover:text-blue-600">Teams</a>
+                <a href="#documents" class="hover:text-blue-600">Documents</a>
+                <a href="admin.html" class="bg-slate-800 text-white px-4 py-1.5 rounded-full hover:bg-slate-700 transition">Admin</a>
+            </div>
+        </div>
     </nav>
 
-    <main class="container">
-        <section id="teams-section">
-            <h2>League Teams</h2>
-            <div id="teams-list" class="grid">
-                <!-- Teams will be injected here -->
-                Loading teams...
+    <!-- Hero Section -->
+    <header class="max-w-6xl mx-auto px-4 py-12">
+        <div class="flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">League Dashboard</h1>
+                <p class="text-slate-500 mt-2 text-sm">Welcome to the 2025 Spring Softball Season.</p>
             </div>
-        </section>
+            <div id="field-status" class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-100 text-xs font-bold uppercase tracking-wider">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Fields: Open
+            </div>
+        </div>
+    </header>
 
-        <hr>
+    <main class="max-w-6xl mx-auto px-4">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <i data-lucide="users" class="text-blue-500 w-5 h-5 mb-3"></i>
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Active Teams</h3>
+                <p id="team-count" class="text-2xl font-bold text-slate-800">--</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <i data-lucide="calendar" class="text-purple-500 w-5 h-5 mb-3"></i>
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Next Game</h3>
+                <p id="next-game" class="text-sm font-semibold text-slate-800 mt-1">Saturday @ 10:00 AM</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <i data-lucide="message-square" class="text-orange-500 w-5 h-5 mb-3"></i>
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Forum Posts</h3>
+                <p class="text-2xl font-bold text-slate-800">24</p>
+            </div>
+        </div>
 
-        <section id="schedule-section">
-            <h2>Upcoming Games & Results</h2>
-            <figure>
-                <table role="grid">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Home</th>
-                            <th>Away</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody id="games-list">
-                        <!-- Games injected here -->
-                    </tbody>
-                </table>
-            </figure>
+        <!-- Teams Section -->
+        <section id="teams" class="mb-12">
+            <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i data-lucide="shield" class="w-5 h-5 text-blue-600"></i> League Teams
+            </h2>
+            <div id="teams-list" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Teams cards injected here -->
+            </div>
         </section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

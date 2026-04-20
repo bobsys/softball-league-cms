@@ -36,10 +36,23 @@ async function startApp() {
         if (error) console.error(error);
         else if (data.length === 0) teamsList.innerHTML = 'No teams found.';
         else {
-            teamsList.innerHTML = data.map(team => `
-                <article><header><strong>${team.name}</strong></header>Coach: ${team.coach_name || 'N/A'}</article>
-            `).join('');
-        }
+teamsList.innerHTML = data.map(team => `
+    <article class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition group">
+        <div class="flex justify-between items-start mb-4">
+            <div class="bg-blue-50 p-2 rounded-lg text-blue-600">
+                <i data-lucide="shield" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active</span>
+        </div>
+        <h3 class="font-bold text-slate-800 group-hover:text-blue-600 transition">${team.name}</h3>
+        <p class="text-xs text-slate-500 mt-1">Coach: ${team.coach_name || 'N/A'}</p>
+        <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+             <span class="text-[10px] font-bold text-slate-400">2025 SEASON</span>
+             <button class="text-xs font-semibold text-blue-600 hover:underline">View Roster</button>
+        </div>
+    </article>
+`).join('');
+lucide.createIcons(); // Refresh icons after injecting HTML        }
     }
 
     // FETCH GAMES
