@@ -1,6 +1,7 @@
 // 1. CONFIGURATION
 const SUPABASE_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co';
-const SUPABASE_KEY = 'YOUR_PUBLISHABLE_KEY'; // Replace with your actual key
+const SUPABASE_KEY = 'sb_publishable_CXlvnbzmTyV_HuRVJNnB1A_SjRqfO2K';
+                       
 let db;
 
 // 2. INITIALIZATION
