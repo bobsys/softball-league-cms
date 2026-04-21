@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Softball League | Community Portal</title>
+    <title>Irondequoit Senior Softball</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -11,52 +11,47 @@
             document.documentElement.classList.add('dark');
         } else { document.documentElement.classList.remove('dark') }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-    <!-- TOP NAVIGATION (NO SIDEBAR HERE) -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-3">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="bg-blue-600 p-1.5 rounded-lg text-white">
-                    <i data-lucide="trophy" class="w-5 h-5"></i>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+
+    <!-- UNIVERSAL HEADER -->
+    <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-blue-600">
+                <div>
+                    <span class="font-black text-xl tracking-tighter block leading-none">IRONDEQUOIT</span>
+                    <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-[.2em]">Senior Softball</span>
                 </div>
-                <span class="font-bold tracking-tight text-lg">SoftballCentral</span>
-            </div>
-            <div class="flex items-center gap-6 text-sm font-medium">
-                <a href="index.html" class="text-blue-600">Home</a>
-                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i></button>
-                <a href="admin.html" class="bg-slate-800 dark:bg-blue-600 text-white px-4 py-1.5 rounded-full hover:opacity-90">Admin Portal</a>
+            </a>
+            <div class="flex items-center gap-6">
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800"><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i></button>
+                <a href="admin.html" class="bg-slate-900 dark:bg-blue-600 text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Admin</a>
             </div>
         </div>
     </nav>
 
-    <header class="max-w-6xl mx-auto px-4 py-12 text-center lg:text-left">
-        <h1 class="text-4xl font-extrabold tracking-tight">League Dashboard</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Welcome to the official 2025 League site.</p>
-    </header>
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Left Column: Teams -->
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-black mb-8 flex items-center gap-3"><i data-lucide="shield" class="text-blue-600"></i> League Teams</h2>
+                <div id="teams-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Team blocks will link to team-details.html?id=... -->
+                </div>
+            </div>
 
-    <main class="max-w-6xl mx-auto px-4 pb-20">
-        <section id="teams" class="mb-12">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i data-lucide="shield" class="w-5 h-5 text-blue-600"></i> Active Teams
-            </h2>
-            <div id="teams-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Teams from DB will show here -->
-                <p class="text-slate-400 text-sm">Connecting to database...</p>
+            <!-- Right Column: Documents -->
+            <div>
+                <h2 class="text-2xl font-black mb-8 flex items-center gap-3"><i data-lucide="file-text" class="text-orange-500"></i> Resources</h2>
+                <div id="docs-list" class="space-y-6">
+                    <!-- Groups will be injected here -->
+                </div>
             </div>
-        </section>
-        <!-- Documents Section -->
-        <section id="documents-section" class="mb-12">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i data-lucide="file-text" class="w-5 h-5 text-orange-500"></i> Documents & Resources
-            </h2>
-            <div id="docs-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Docs injected here -->
-            </div>
-        </section>
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
