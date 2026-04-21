@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Details | ISS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    
+    <!-- Copy Header from index.html here -->
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex flex-col lg:flex-row gap-12">
+            <!-- Sidebar: Other Teams -->
+            <aside class="w-full lg:w-64 shrink-0">
+                <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest mb-4">League Directory</h3>
+                <div id="sidebar-teams" class="space-y-1">
+                    <!-- List of all teams -->
+                </div>
+            </aside>
+
+            <!-- Main: Team Details -->
+            <div class="flex-1">
+                <div id="team-header" class="mb-10">
+                    <!-- Team Name and Coach injected here -->
+                </div>
+                
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-4 font-bold">Player Name</th>
+                                <th class="p-4 font-bold">Position</th>
+                                <th class="p-4 font-bold">Age</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roster-list">
+                            <!-- Players injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
