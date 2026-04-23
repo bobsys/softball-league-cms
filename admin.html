@@ -15,8 +15,63 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex min-h-screen">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
 
+    <!-- 1. UNIVERSAL HEADER (Always at the very top) -->
+    <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
+        <div class="max-w-full mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600">
+                <div>
+                    <span class="font-black text-lg tracking-tighter block leading-none dark:text-white uppercase">Irondequoit</span>
+                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Senior Softball</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800"><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i></button>
+                <span class="text-[10px] font-black bg-slate-200 dark:bg-slate-800 px-3 py-1 rounded-full uppercase tracking-widest text-slate-500">Admin Mode</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. LAYOUT WRAPPER (Flexbox starts here) -->
+    <div class="flex">
+        
+        <!-- SIDEBAR (Management Controls) -->
+        <aside class="w-64 bg-slate-900 text-slate-400 flex flex-col h-[calc(100vh-64px)] sticky top-16 border-r border-slate-800">
+            <nav class="p-4 space-y-2 text-sm">
+                <div class="text-[10px] uppercase tracking-[.2em] text-slate-600 font-black px-3 mb-4">Management</div>
+                <a href="#" class="flex items-center gap-3 p-3 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-900/20">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
+                </a>
+                <a href="#teams-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i data-lucide="users" class="w-4 h-4"></i> Teams & Players
+                </a>
+                <a href="#docs-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> Documents
+                </a>
+            </nav>
+            <div class="mt-auto p-6 border-t border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 text-xs font-bold hover:text-white transition">
+                    <i data-lucide="log-out" class="w-4 h-4 text-red-500"></i> Exit Admin
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 p-10 overflow-y-auto">
+            <header class="mb-10">
+                <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Dashboard</h1>
+                <p class="text-slate-500 dark:text-slate-400">Welcome back, Admin. Manage your league rosters and files below.</p>
+            </header>
+
+            <!-- ... Your forms (Add Team, Add Player, Upload Doc) and the Admin Teams List go here ... -->
+            
+        </main>
+    </div>
+
+    <!-- ... Script Tags ... -->
+</body>
     <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col sticky top-0 h-screen">
         <div class="p-6 border-b border-slate-800">
