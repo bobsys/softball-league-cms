@@ -131,22 +131,33 @@
                     </form>
                 </div>
             </div>
-            
-            <!-- Batch Import Card -->
-            <section id="import-section" class="mt-12 max-w-4xl">
-                <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <h2 class="font-bold mb-4 text-sm flex items-center gap-2">
-                        <i data-lucide="database-backup" class="w-4 h-4 text-purple-500"></i> Batch Import Rosters
-                    </h2>
-                    <p class="text-xs text-slate-500 mb-4">Paste the contents of your "Final Rosters" text file below to automatically create teams and players.</p>
-                    <textarea id="import-area" rows="10" class="w-full text-mono text-xs p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl outline-none mb-4" placeholder="Paste text file content here..."></button>
-                    <button id="import-btn" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-purple-700 transition">Start Import Process</button>
-                    <div id="import-status" class="mt-4 text-xs font-bold text-blue-600 hidden"></div>
+
+            <!-- BATCH IMPORT SECTION -->
+            <section id="import-section" class="mt-12 pt-12 border-t border-slate-200 dark:border-slate-800">
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-xl text-purple-600">
+                            <i data-lucide="database" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-black text-lg">Batch Roster Import</h2>
+                            <p class="text-xs text-slate-500">Paste your "Official Team Rosters" text here to sync the database.</p>
+                        </div>
+                    </div>
+
+                    <!-- THE TEXTAREA MUST CLOSE HERE -->
+                    <textarea id="import-area" rows="8" class="w-full text-mono text-[11px] p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 transition mb-4" placeholder="Paste roster text here..."></textarea>
+                    
+                    <!-- THE BUTTON IS OUTSIDE THE TEXTAREA -->
+                    <button id="import-btn" class="flex items-center justify-center gap-2 w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-black text-sm transition shadow-lg shadow-purple-900/20">
+                        <i data-lucide="play" class="w-4 h-4"></i> Run Bulk Import
+                    </button>
+                    
+                    <div id="import-status" class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 text-[10px] font-mono hidden max-h-40 overflow-y-auto border border-slate-200 dark:border-slate-700"></div>
                 </div>
             </section>
         </main>
     </div>
-
     
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
