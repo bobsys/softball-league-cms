@@ -9,7 +9,8 @@ function init() {
         db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         loadAllData();
         setupForms();
-    } catch (e) { console.error("Initialization failed:", e); }
+        setupThemeToggle(); 
+    } catch (e) { console.error(e); }
 }
 
 // 3. DATA LOADING & ROUTING
@@ -198,5 +199,16 @@ window.editTeam = async (id, currentName) => {
         if (error) alert(error.message); else location.reload();
     }
 };
+
+// Add this at the bottom of app.js
+function setupThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+    });
+}
 
 window.addEventListener('load', init);

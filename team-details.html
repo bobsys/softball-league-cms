@@ -5,83 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Roster | Irondequoit Senior Softball</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
+        // Standard Dark Mode Prevention Script
         tailwind.config = { darkMode: 'class' }
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
-        } else { document.documentElement.classList.remove('dark') }
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Hide scrollbar for Chrome/Safari */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* Hide scrollbar for IE/Edge/Firefox */
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
-    <!-- 1. UNIVERSAL HEADER (Always at the very top) -->
+    <!-- UNIVERSAL HEADER -->
     <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
         <div class="max-w-full mx-auto px-6 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3">
-                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="ISS Logo" class="w-10 h-10 rounded-full border-2 border-blue-600 transition group-hover:scale-105">
                 <div>
                     <span class="font-black text-lg tracking-tighter block leading-none dark:text-white uppercase">Irondequoit</span>
-                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Senior Softball</span>
+                    <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Senior Softball</span>
                 </div>
             </a>
             <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800"><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i></button>
-                <span class="text-[10px] font-black bg-slate-200 dark:bg-slate-800 px-3 py-1 rounded-full uppercase tracking-widest text-slate-500">Admin Mode</span>
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:ring-2 ring-blue-500 transition">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                </button>
+                <a href="admin.html" class="bg-slate-900 dark:bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition">Admin</a>
             </div>
         </div>
     </nav>
 
+    <div class="flex flex-1">
+        <!-- SIDEBAR (Consistent with Admin Style) -->
+        <aside class="w-64 bg-slate-900 text-slate-400 flex flex-col h-[calc(100vh-60px)] sticky top-[60px] border-r border-slate-800 hidden lg:flex">
+            <nav class="p-4 space-y-1 text-sm overflow-y-auto no-scrollbar">
+                <div class="text-[10px] uppercase tracking-[.2em] text-slate-600 font-black px-3 mb-4 mt-2">League Directory</div>
+                <div id="sidebar-teams" class="space-y-1">
+                    <!-- Team links will be injected here by app.js -->
+                    <p class="px-3 text-xs italic text-slate-600">Loading directory...</p>
+                </div>
+            </nav>
+            <div class="mt-auto p-6 border-t border-slate-800">
+                <a href="index.html" class="flex items-center gap-2 text-xs font-bold hover:text-white transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
+                </a>
+            </div>
+        </aside>
 
-    <main class="max-w-7xl mx-auto px-4 py-12">
-        <div class="flex flex-col lg:flex-row gap-12">
+        <!-- MAIN ROSTER CONTENT -->
+        <main class="flex-1 p-6 lg:p-12 overflow-y-auto">
+            <!-- Breadcrumbs for Mobile -->
+            <div class="lg:hidden mb-6">
+                <a href="index.html" class="text-xs font-bold text-blue-600 flex items-center gap-1">
+                    <i data-lucide="chevron-left" class="w-3 h-3"></i> League Directory
+                </a>
+            </div>
+
+            <!-- Team Header (Name and Coach) -->
+            <div id="team-header" class="mb-10">
+                <div class="h-12 w-48 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl"></div>
+            </div>
             
-            <!-- SIDEBAR: TEAM DIRECTORY -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <div class="sticky top-24">
-                    <h3 class="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[.2em] mb-4 px-3">League Directory</h3>
-                    <nav id="sidebar-teams" class="space-y-1">
-                        <!-- Sidebar team links injected here -->
-                    </nav>
-                </div>
-            </aside>
-
-            <!-- MAIN CONTENT: ROSTER -->
-            <div class="flex-1">
-                <div id="team-header" class="mb-10">
-                    <!-- Team name/Coach injected here -->
-                </div>
-                
-                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                                <tr class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    <th class="p-5">Player Name</th>
-                                    <th class="p-5 text-center">Position</th>
-                                    <th class="p-5 text-center">Age</th>
-                                </tr>
-                            </thead>
-                            <tbody id="roster-list" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                <!-- Roster injected here -->
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Roster Table Container -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                            <tr class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <th class="p-5">Player Name</th>
+                                <th class="p-5 text-center">Position</th>
+                                <th class="p-5 text-center">Age</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roster-list" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Players will be injected here by app.js -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
     <script>
-        // Theme Toggle Functionality for this page
-        lucide.createIcons();
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        // Re-initialize Lucide Icons
+        window.addEventListener('load', () => {
+            lucide.createIcons();
         });
     </script>
 </body>
