@@ -260,13 +260,19 @@ window.closeModal = () => {
     document.getElementById('edit-modal').classList.add('hidden');
 };
 
-// HANDLE MODAL SUBMIT (Add this inside setupForms() or at the end of app.js)
+// Add this inside your setupForms() function OR at the very bottom of app.js
 const editPlayerForm = document.getElementById('edit-player-form');
+
 if (editPlayerForm) {
+    console.log("Edit Player Form listener attached."); // Debug log
+    
     editPlayerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log("Save button clicked!"); // Debug log
         
         const id = document.getElementById('edit-player-id').value;
+        
+        // Construct the update object
         const updates = {
             name: document.getElementById('edit-player-name').value,
             team_id: parseInt(document.getElementById('edit-player-team').value),
@@ -275,14 +281,30 @@ if (editPlayerForm) {
             phone_number: document.getElementById('edit-player-phone').value
         };
 
-        const { error } = await db.from('players').update(updates).eq('id', id);
+        console.log("Sending updates to Supabase for ID:", id, updates);
+
+        // Perform the update
+        const { data, error } = await db
+            .from('players')
+            .update(updates)
+            .eq('id', id);
 
         if (error) {
-            alert(error.message);
+            console.error("Supabase Update Error:", error.message);
+            alert("Error updating player: " + error.message);
         } else {
+            console.log("Update successful!");
             alert("Player updated successfully!");
-            closeModal();
-            loadAllData(); // Refresh the list
+            
+            // 1. Close the modal
+            window.closeModal(); 
+            
+            // 2. Refresh the data on the page
+            if (typeof loadAllData === "function") {
+                await loadAllData(); 
+            } else {
+                location.reload(); // Fallback if loadAllData isn't global
+            }
         }
     });
 }
