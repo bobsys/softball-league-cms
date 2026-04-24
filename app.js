@@ -210,6 +210,70 @@ function setupForms() {
             location.reload();
         });
     }
+
+    // 1. Inside loadAllData() function:
+    const forumList = document.getElementById('forum-list');
+    const adminForumList = document.getElementById('admin-forum-list');
+
+    if (forumList || adminForumList) {
+        const { data: posts, error } = await db.from('forum_posts').select('*').order('created_at', { ascending: false });
+        
+        if (posts) {
+            if (forumList) {
+                forumList.innerHTML = posts.map(p => `
+                    <article class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white">${p.title}</h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">${new Date(p.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">${p.content}</p>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold">
+                                ${p.author_name[0]}
+                            </div>
+                            <span class="text-xs font-bold text-slate-500 italic">Posted by ${p.author_name}</span>
+                        </div>
+                    </article>
+                `).join('');
+            }
+
+            if (adminForumList) {
+                adminForumList.innerHTML = posts.map(p => `
+                    <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div>
+                            <p class="font-bold text-sm">${p.title}</p>
+                            <p class="text-[10px] text-slate-500 italic">by ${p.author_name}</p>
+                        </div>
+                        <button onclick="window.deletePost(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    // 2. Inside setupForms() function:
+    const forumForm = document.getElementById('forum-form');
+    if (forumForm) {
+        forumForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                author_name: document.getElementById('post-author').value,
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value
+            };
+            const { error } = await db.from('forum_posts').insert([payload]);
+            if (error) alert(error.message);
+            else location.reload();
+        });
+    }
+
+    // 3. At the bottom under Global Management Actions:
+    window.deletePost = async (id) => {
+        if (!confirm("Delete this forum post?")) return;
+        await db.from('forum_posts').delete().eq('id', id);
+        location.reload();
+    };
+
 }
 
 // 5. UTILITIES

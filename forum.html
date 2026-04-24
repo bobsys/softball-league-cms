@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Forum | Irondequoit Senior Softball</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else { document.documentElement.classList.remove('dark') }
+    </script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+    <!-- INSERT UNIVERSAL HEADER HERE -->
+    <!-- (Note: Add a link to forum.html in your header code in all files) -->
+
+    <div class="flex flex-1">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-900 text-slate-400 flex flex-col h-[calc(100vh-60px)] sticky top-[60px] border-r border-slate-800 hidden lg:flex">
+            <nav class="p-6 space-y-4">
+                <div class="text-[10px] font-black uppercase tracking-widest text-slate-600">Community</div>
+                <button onclick="document.getElementById('post-modal').classList.remove('hidden')" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition flex items-center justify-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> New Post
+                </button>
+            </nav>
+        </aside>
+
+        <!-- FORUM FEED -->
+        <main class="flex-1 p-6 lg:p-12 overflow-y-auto">
+            <header class="mb-10">
+                <h1 class="text-5xl font-black tracking-tight">League Forum</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Discuss games, find subs, or share league news.</p>
+            </header>
+
+            <div id="forum-list" class="max-w-3xl space-y-6">
+                <!-- Posts injected here -->
+                <p class="text-slate-400 italic">Loading discussions...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- NEW POST MODAL -->
+    <div id="post-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between">
+                <h3 class="font-black text-xl">Create Discussion</h3>
+                <button onclick="document.getElementById('post-modal').classList.add('hidden')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="forum-form" class="p-6 space-y-4">
+                <input type="text" id="post-author" placeholder="Your Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" required>
+                <input type="text" id="post-title" placeholder="Topic Title" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" required>
+                <textarea id="post-content" rows="5" placeholder="What's on your mind?" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-medium" required></textarea>
+                <button type="submit" class="w-full py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition">Post to Forum</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
