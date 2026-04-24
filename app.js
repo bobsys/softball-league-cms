@@ -158,6 +158,63 @@ function setupForms() {
             location.reload();
         });
     }
+
+    const playerForm = document.getElementById('player-form');
+    if (playerForm) {
+        playerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Capture values from the form
+            const team_id = parseInt(document.getElementById('team-select').value);
+            const name = document.getElementById('player-name').value.trim();
+            const age = parseInt(document.getElementById('player-age').value) || null;
+            const position = document.getElementById('player-pos').value.trim();
+            const phone_number = document.getElementById('player-phone').value.trim();
+
+            // Check for duplicates on the same team
+            const { data: existing } = await db.from('players')
+                .select('id')
+                .eq('team_id', team_id)
+                .ilike('name', name);
+
+            if (existing && existing.length > 0) {
+                return alert("This player is already on this team's roster.");
+            }
+
+            // Insert into Supabase
+            const { error } = await db.from('players').insert([{
+                team_id,
+                name,
+                age,
+                position,
+                phone_number // Ensure this matches your database column name
+            }]);
+
+            if (error) {
+                alert("Error adding player: " + error.message);
+            } else {
+                alert("Player added to roster!");
+                playerForm.reset();
+                loadAllData(); // Refresh the management list below
+            }
+        });
+    }
+
+    const teamForm = document.getElementById('team-form');
+    if (teamForm) {
+        teamForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('team-name').value.trim();
+            const coach = document.getElementById('coach-name').value.trim();
+
+            const { data: existing } = await db.from('teams').select('id').ilike('name', name);
+            if (existing?.length) return alert("Team name already exists!");
+
+            const { error } = await db.from('teams').insert([{ name, coach_name: coach }]);
+            if (error) alert(error.message);
+            else { teamForm.reset(); loadAllData(); }
+        });
+    }
 }
 
 // THEME
