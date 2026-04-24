@@ -211,4 +211,85 @@ function setupThemeToggle() {
     });
 }
 
+// Add to setupForms() or near the end of app.js
+const importBtn = document.getElementById('import-btn');
+if (importBtn) {
+    importBtn.addEventListener('click', async () => {
+        const text = document.getElementById('import-area').value;
+        const status = document.getElementById('import-status');
+        if (!text) return alert("Paste some text first!");
+
+        status.innerText = "Parsing and Importing... please wait.";
+        status.classList.remove('hidden');
+        importBtn.disabled = true;
+
+        // 1. Split into Team Blocks
+        const teamBlocks = text.split(/MANAGER:/g).filter(block => block.trim().length > 0);
+        
+        for (const block of teamBlocks) {
+            const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            // 2. Extract Manager/Team Name
+            const teamName = lines[0].replace(/-+/g, '').trim();
+            
+            // Check if Team Exists
+            let { data: teamData } = await db.from('teams').select('id').ilike('name', teamName).single();
+            let teamId;
+
+            if (!teamData) {
+                const { data: newTeam, error: tErr } = await db.from('teams').insert([{ name: teamName, coach_name: teamName }]).select().single();
+                if (tErr) { console.error(tErr); continue; }
+                teamId = newTeam.id;
+            } else {
+                teamId = teamData.id;
+            }
+
+            // 3. Extract Players
+            const playersToInsert = [];
+            let currentPlayer = null;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+
+                // New Player Detected (Starts with number.)
+                if (/^\d+\./.test(line)) {
+                    if (currentPlayer) playersToInsert.push(currentPlayer);
+                    currentPlayer = { 
+                        team_id: teamId, 
+                        name: line.replace(/^\d+\.\s+/, '').trim() 
+                    };
+                } 
+                // Contact Data
+                else if (line.includes('CONTACT:')) {
+                    const phone = line.match(/CONTACT:\s*([\d-]+)/);
+                    if (phone) currentPlayer.phone_number = phone[1];
+                } 
+                // Age Data
+                else if (line.includes('DATA:')) {
+                    const age = line.match(/\[Age:\s*(\d+)\]/);
+                    if (age) currentPlayer.age = parseInt(age[1]);
+                }
+                // Position Data
+                else if (line.includes('FIELD:')) {
+                    const pos = line.match(/\[Pos:\s*([^\]]+)\]/);
+                    if (pos) currentPlayer.position = pos[1];
+                }
+            }
+            // Add the last player of the block
+            if (currentPlayer) playersToInsert.push(currentPlayer);
+
+            // 4. Batch Insert Players (Duplicate check handled by checking names)
+            for (const p of playersToInsert) {
+                const { data: exists } = await db.from('players').select('id').eq('team_id', teamId).ilike('name', p.name);
+                if (!exists || exists.length === 0) {
+                    await db.from('players').insert([p]);
+                }
+            }
+        }
+
+        status.innerText = "Import Complete!";
+        alert("Import finished successfully.");
+        location.reload();
+    });
+}
 window.addEventListener('load', init);

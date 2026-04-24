@@ -131,10 +131,23 @@
                     </form>
                 </div>
             </div>
-
+            
+            <!-- Batch Import Card -->
+            <section id="import-section" class="mt-12 max-w-4xl">
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h2 class="font-bold mb-4 text-sm flex items-center gap-2">
+                        <i data-lucide="database-backup" class="w-4 h-4 text-purple-500"></i> Batch Import Rosters
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-4">Paste the contents of your "Final Rosters" text file below to automatically create teams and players.</p>
+                    <textarea id="import-area" rows="10" class="w-full text-mono text-xs p-4 bg-slate-50 dark:bg-slate-800 border-none rounded-xl outline-none mb-4" placeholder="Paste text file content here..."></button>
+                    <button id="import-btn" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-purple-700 transition">Start Import Process</button>
+                    <div id="import-status" class="mt-4 text-xs font-bold text-blue-600 hidden"></div>
+                </div>
+            </section>
         </main>
     </div>
 
+    
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
