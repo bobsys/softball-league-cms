@@ -75,6 +75,37 @@ async function loadAllData() {
             teamSelect.innerHTML = '<option value="">Select Team...</option>' + 
                 teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
+
+        // A. Update the team-details.html rendering 
+        if (teamId && rosterList) {
+            // ... (existing team header code) ...
+            const { data: players } = await db.from('players').select('*').eq('team_id', teamId).order('name');
+            rosterList.innerHTML = players.map(p => `
+                <tr class="border-b border-slate-100 dark:border-slate-800">
+                    <td class="p-5 font-bold text-slate-800 dark:text-white">${p.name}</td>
+                    <td class="p-5 text-center font-medium text-slate-500">${p.position || '--'}</td>
+                    <td class="p-5 text-center font-medium text-slate-500">${p.age || '--'}</td>
+                    <td class="p-5 text-center font-mono text-blue-600 dark:text-blue-400 text-[11px]">${p.phone_number || '--'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // B. Add Player Management for Admin Page (inside loadAllData)
+        const adminPlayersList = document.getElementById('admin-players-list');
+        if (adminPlayersList) {
+            const { data: allPlayers } = await db.from('players').select('*, teams(name)').order('name');
+            adminPlayersList.innerHTML = allPlayers.map(p => `
+                <tr>
+                    <td class="p-4 font-bold">${p.name}</td>
+                    <td class="p-4 text-slate-500 uppercase text-[10px]">${p.teams?.name || 'No Team'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="editPlayer(${p.id}, '${p.name}')" class="text-blue-500 hover:text-blue-700 mx-2"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                        <button onclick="deletePlayer(${p.id})" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
     }
 
     // B. FETCH TEAM SPECIFIC ROSTER (If on team-details.html)
@@ -286,6 +317,24 @@ if (importBtn) {
                 }
             }
         }
+
+        // DELETE PLAYER
+        window.deletePlayer = async (id) => {
+            if (!confirm("Are you sure you want to remove this player?")) return;
+            const { error } = await db.from('players').delete().eq('id', id);
+            if (error) alert(error.message);
+            else location.reload();
+        };
+
+        // EDIT PLAYER (Quick Edit)
+        window.editPlayer = async (id, currentName) => {
+            const newName = prompt("Update player name:", currentName);
+            if (newName && newName !== currentName) {
+                const { error } = await db.from('players').update({ name: newName }).eq('id', id);
+                if (error) alert(error.message);
+                else location.reload();
+            }
+        };
 
         status.innerText = "Import Complete!";
         alert("Import finished successfully.");
