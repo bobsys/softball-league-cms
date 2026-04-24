@@ -309,4 +309,58 @@ if (editPlayerForm) {
     });
 }
 
+    // ==========================================
+    // DIRECT MODAL SAVE ACTION
+    // ==========================================
+    window.savePlayerEdit = async function() {
+        console.log("Save button clicked directly via onclick!");
+
+        const id = document.getElementById('edit-player-id').value;
+        const name = document.getElementById('edit-player-name').value;
+        const team_id = parseInt(document.getElementById('edit-player-team').value);
+        const age = parseInt(document.getElementById('edit-player-age').value) || null;
+        const position = document.getElementById('edit-player-pos').value;
+        const phone = document.getElementById('edit-player-phone').value;
+
+        if (!id) {
+            alert("Error: No player ID found.");
+            return;
+        }
+
+        // Change the button text so we know it's working
+        const saveBtn = document.querySelector("#edit-modal button[onclick='savePlayerEdit()']");
+        const originalText = saveBtn.innerText;
+        saveBtn.innerText = "Saving...";
+        saveBtn.disabled = true;
+
+        try {
+            const { error } = await db
+                .from('players')
+                .update({
+                    name: name,
+                    team_id: team_id,
+                    age: age,
+                    position: position,
+                    phone_number: phone
+                })
+                .eq('id', id);
+
+            if (error) {
+                console.error("Supabase error:", error.message);
+                alert("Update failed: " + error.message);
+            } else {
+                console.log("Update successful for ID:", id);
+                alert("Player updated successfully!");
+                window.closeModal();
+                location.reload(); // Refresh the page to show changes
+            }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            alert("An unexpected error occurred.");
+        } finally {
+            saveBtn.innerText = originalText;
+            saveBtn.disabled = false;
+        }
+    };
+
 window.addEventListener('load', init);
