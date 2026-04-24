@@ -77,7 +77,7 @@ async function loadAllData() {
                 <td class="p-4 font-bold">${p.name}</td>
                 <td class="p-4 text-[10px] uppercase text-slate-500">${p.teams?.name || 'No Team'}</td>
                 <td class="p-4 text-right">
-                    <button onclick="window.editPlayer(${p.id}, '${p.name}')" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                    <button onclick="window.editPlayer(${p.id})" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
                     <button onclick="window.deletePlayer(${p.id})" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </td>
             </tr>`).join('');
@@ -230,6 +230,61 @@ function setupThemeToggle() {
 window.deleteTeam = async (id) => { if (confirm("Delete team?")) { await db.from('teams').delete().eq('id', id); location.reload(); } };
 window.editTeam = async (id, name) => { const n = prompt("Rename:", name); if (n) { await db.from('teams').update({ name: n }).eq('id', id); location.reload(); } };
 window.deletePlayer = async (id) => { if (confirm("Delete player?")) { await db.from('players').delete().eq('id', id); location.reload(); } };
-window.editPlayer = async (id, name) => { const n = prompt("Rename:", name); if (n) { await db.from('players').update({ name: n }).eq('id', id); location.reload(); } };
+// OPEN EDIT MODAL
+window.editPlayer = async (id) => {
+    const modal = document.getElementById('edit-modal');
+    const editTeamSelect = document.getElementById('edit-player-team');
+
+    // 1. Fetch current player data
+    const { data: p, error } = await db.from('players').select('*').eq('id', id).single();
+    if (error) return alert(error.message);
+
+    // 2. Populate the Team dropdown in the modal (same as the main one)
+    const { data: teams } = await db.from('teams').select('id, name').order('name');
+    editTeamSelect.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === p.team_id ? 'selected' : ''}>${t.name}</option>`).join('');
+
+    // 3. Fill the form fields
+    document.getElementById('edit-player-id').value = p.id;
+    document.getElementById('edit-player-name').value = p.name;
+    document.getElementById('edit-player-age').value = p.age || '';
+    document.getElementById('edit-player-pos').value = p.position || '';
+    document.getElementById('edit-player-phone').value = p.phone_number || '';
+
+    // 4. Show the modal
+    modal.classList.remove('hidden');
+    lucide.createIcons(); // Refresh close icon
+};
+
+// CLOSE MODAL
+window.closeModal = () => {
+    document.getElementById('edit-modal').classList.add('hidden');
+};
+
+// HANDLE MODAL SUBMIT (Add this inside setupForms() or at the end of app.js)
+const editPlayerForm = document.getElementById('edit-player-form');
+if (editPlayerForm) {
+    editPlayerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const id = document.getElementById('edit-player-id').value;
+        const updates = {
+            name: document.getElementById('edit-player-name').value,
+            team_id: parseInt(document.getElementById('edit-player-team').value),
+            age: parseInt(document.getElementById('edit-player-age').value) || null,
+            position: document.getElementById('edit-player-pos').value,
+            phone_number: document.getElementById('edit-player-phone').value
+        };
+
+        const { error } = await db.from('players').update(updates).eq('id', id);
+
+        if (error) {
+            alert(error.message);
+        } else {
+            alert("Player updated successfully!");
+            closeModal();
+            loadAllData(); // Refresh the list
+        }
+    });
+}
 
 window.addEventListener('load', init);
