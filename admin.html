@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Irondequoit Senior Softball</title>
+    <title>Admin | Irondequoit Senior Softball</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else { document.documentElement.classList.remove('dark') }
     </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }</style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
 
-    <!-- UNIVERSAL HEADER -->
     <div id="header-wrap"></div>
 
     <div class="flex">
@@ -28,163 +24,112 @@
         <aside class="w-64 bg-slate-900 text-slate-400 flex flex-col h-[calc(100vh-60px)] sticky top-[60px] border-r border-slate-800 hidden lg:flex">
             <nav class="p-4 space-y-1 text-sm">
                 <div class="text-[10px] uppercase tracking-[.2em] text-slate-600 font-black px-3 mb-4 mt-2">Management</div>
-                <a href="#overview" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
-                </a>
-                <a href="#teams-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition">
-                    <i data-lucide="users" class="w-4 h-4"></i> Teams & Players
-                </a>
-                <a href="#docs-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition">
-                    <i data-lucide="file-text" class="w-4 h-4"></i> Documents
-                </a>
+                <a href="#docs-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="file-up" class="w-4 h-4"></i> Upload Document</a>
+                <a href="#forum-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="message-square" class="w-4 h-4"></i> Forum Moderation</a>
+                <a href="#admin-teams-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="shield" class="w-4 h-4"></i> Manage Existing Teams</a>
+                <a href="#create-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="plus-circle" class="w-4 h-4"></i> New Team or Player</a>
+                <a href="#players-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="users" class="w-4 h-4"></i> Manage Players</a>
+                <a href="#import-section" class="flex items-center gap-3 p-3 hover:bg-slate-800 hover:text-white rounded-xl transition"><i data-lucide="database" class="w-4 h-4"></i> Batch Roster Import</a>
             </nav>
-            <div class="mt-auto p-6 border-t border-slate-800">
-                <a href="index.html" class="flex items-center gap-2 text-xs font-bold hover:text-white transition">
-                    <i data-lucide="log-out" class="w-4 h-4 text-red-500"></i> Exit Admin
-                </a>
-            </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
         <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
-            
-            <!-- 1. HEADER & LEAGUE CONTROL -->
             <header class="mb-10 flex justify-between items-end">
                 <div>
                     <h1 class="text-4xl font-black tracking-tight">Admin Dashboard</h1>
-                    <p class="text-slate-500 dark:text-slate-400">Manage league settings, rosters, and files.</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">League settings and roster management.</p>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <div id="field-status-box"></div>
-                    <!-- EMAIL ENTIRE LEAGUE BUTTON -->
-                    <a id="email-all-players" href="#" class="bg-slate-800 dark:bg-slate-700 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-2">
+                <div class="flex flex-col gap-2 items-end">
+                    <div class="bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 flex gap-1">
+                        <button onclick="window.toggleFieldStatus('ON')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest">ON</button>
+                        <button onclick="window.toggleFieldStatus('OFF')" class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-[10px] font-black uppercase tracking-widest">CANCELLED</button>
+                    </div>
+                    <a id="email-all-players" href="#" class="bg-slate-800 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition hover:bg-slate-700">
                         <i data-lucide="mail" class="w-4 h-4"></i> Email Entire League
                     </a>
                 </div>
             </header>
 
-            <!-- 2. UPLOAD DOCUMENT -->
-            <section id="docs-section" class="scroll-mt-24 mb-12">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">1. Upload Document</h3>
+            <section id="docs-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">1. Upload Document</h3>
                 <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl">
                     <form id="doc-form" class="space-y-4">
-                        <input type="text" id="doc-title" placeholder="Title" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-sm font-bold" required>
-                        <input list="category-options" id="doc-category" placeholder="Group" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-sm font-bold">
-                        <input type="file" id="doc-file" class="text-xs" required>
-                        <button type="submit" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black text-xs uppercase tracking-widest">Save Document</button>
+                        <input type="text" id="doc-title" placeholder="Document Title" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-sm font-bold" required>
+                        <input list="category-options" id="doc-category" placeholder="Group (e.g. Rules, Maps)" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-sm font-bold">
+                        <datalist id="category-options"><option value="Rules"><option value="Field Maps"><option value="Guides"></datalist>
+                        <input type="file" id="doc-file" class="text-xs w-full" required>
+                        <button type="submit" class="w-full bg-orange-600 text-white py-3 rounded-xl font-black text-xs uppercase">Save Document</button>
                     </form>
                 </div>
             </section>
 
-            <!-- 3. FORUM MODERATION -->
-            <section id="forum-section" class="scroll-mt-24 mb-12">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">2. Forum Moderation</h3>
+            <section id="forum-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">2. Forum Moderation</h3>
                 <div id="admin-forum-list" class="space-y-2"></div>
             </section>
 
-            <!-- 4. MANAGE EXISTING TEAMS -->
-            <section id="admin-teams-section" class="scroll-mt-24 mb-12">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">3. Manage Existing Teams</h3>
+            <section id="admin-teams-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">3. Manage Existing Teams</h3>
                 <div id="admin-teams-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- 5. ADD PLAYER / ADD TEAM -->
-            <section class="mb-12">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">4. Create New Data</h3>
+            <section id="create-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">4. New Team or Player</h3>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800">
-                        <h4 class="font-bold mb-4 text-xs uppercase tracking-widest text-blue-500">New Team</h4>
+                        <h4 class="font-bold mb-4 text-xs uppercase text-blue-500">Add Team</h4>
                         <form id="team-form" class="space-y-4">
                             <input type="text" id="team-name" placeholder="Team Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold" required>
-                            <input type="text" id="coach-name" placeholder="Coach" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold">
-                            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs uppercase">Save Team</button>
+                            <input type="text" id="coach-name" placeholder="Coach Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold">
+                            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black text-xs uppercase">Save Team</button>
                         </form>
                     </div>
                     <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800">
-                        <h4 class="font-bold mb-4 text-xs uppercase tracking-widest text-emerald-500">New Player</h4>
+                        <h4 class="font-bold mb-4 text-xs uppercase text-emerald-500">Add Player</h4>
                         <form id="player-form" class="space-y-4">
                             <select id="team-select" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold" required></select>
-                            <input type="text" id="player-name" placeholder="Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold" required>
-                            <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-xs uppercase">Add Player</button>
+                            <input type="text" id="player-name" placeholder="Full Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold" required>
+                            <input type="tel" id="player-phone" placeholder="Phone Number" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm font-bold">
+                            <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-black text-xs uppercase">Add Player</button>
                         </form>
                     </div>
                 </div>
             </section>
 
-            <!-- 6. MANAGE PLAYERS -->
-            <section class="mb-12">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">5. Manage Players</h3>
+            <section id="players-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">5. Manage Players</h3>
                 <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <table class="w-full text-left text-sm"><tbody id="admin-players-list" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table>
                 </div>
             </section>
 
-            <!-- 7. BATCH IMPORT -->
-            <section id="import-section" class="scroll-mt-24">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">6. Batch Roster Import</h3>
+            <section id="import-section" class="scroll-mt-24 mb-16">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">6. Batch Roster Import</h3>
                 <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800">
-                    <textarea id="import-area" rows="5" class="w-full text-mono text-xs p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl mb-4"></textarea>
-                    <button id="import-btn" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Run Bulk Import</button>
+                    <textarea id="import-area" rows="4" class="w-full text-mono text-xs p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl mb-4" placeholder="MANAGER: ED HILTON..."></textarea>
+                    <button id="import-btn" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-black text-xs uppercase">Run Bulk Import</button>
                 </div>
             </section>
         </main>
     </div>
-    
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
 
-    <!-- EDIT PLAYER MODAL -->
-    <div id="edit-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+    <!-- PLAYER EDIT MODAL -->
+    <div id="edit-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b dark:border-slate-800 flex justify-between">
                 <h3 class="font-black text-xl">Edit Player</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="window.closeModal()"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <form id="edit-player-form" class="p-6 space-y-4">
                 <input type="hidden" id="edit-player-id">
-                
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black uppercase text-slate-400 px-1">Full Name</label>
-                    <input type="text" id="edit-player-name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" required>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black uppercase text-slate-400 px-1">Assigned Team</label>
-                    <select id="edit-player-team" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold"></select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-black uppercase text-slate-400 px-1">Age</label>
-                        <input type="number" id="edit-player-age" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-black uppercase text-slate-400 px-1">Position</label>
-                        <input type="text" id="edit-player-pos" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black uppercase text-slate-400 px-1">Phone Number</label>
-                    <input type="tel" id="edit-player-phone" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black uppercase text-slate-400 px-1">Email Address</label>
-                    <input type="email" id="edit-player-email" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold">
-                </div>
-
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal()" class="flex-1 py-3 font-bold text-sm text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">Cancel</button>
-                    <button type="button" onclick="savePlayerEdit()" class="flex-1 py-3 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-900/20 transition">Save Changes</button>
-                </div>
+                <input type="text" id="edit-player-name" placeholder="Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold">
+                <input type="tel" id="edit-player-phone" placeholder="Phone" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold">
+                <button type="button" onclick="window.savePlayerEdit()" class="w-full py-4 bg-blue-600 text-white font-black rounded-xl">Save Changes</button>
             </form>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
 </body>
 </html>
