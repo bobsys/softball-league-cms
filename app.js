@@ -16,7 +16,7 @@ function init() {
     }
 }
 
-// 3. DATA LOADING & RENDERING (Handles all 3 pages)
+// 3. DATA LOADING & RENDERING
 async function loadAllData() {
     const teamsList = document.getElementById('teams-list');
     const adminTeamsList = document.getElementById('admin-teams-list');
@@ -26,34 +26,30 @@ async function loadAllData() {
     const rosterList = document.getElementById('roster-list');
     const teamHeader = document.getElementById('team-header');
     const teamSelect = document.getElementById('team-select');
+    
+    // Forum Elements
+    const forumList = document.getElementById('forum-list');
+    const adminForumList = document.getElementById('admin-forum-list');
 
     const urlParams = new URLSearchParams(window.location.search);
     const teamId = urlParams.get('id');
 
     // A. FETCH TEAMS
-    const { data: teams, error: tErr } = await db.from('teams').select('*').order('name');
-    if (tErr) return console.error("Teams error:", tErr.message);
-
+    const { data: teams } = await db.from('teams').select('*').order('name');
     if (teams) {
-        // Render Home Page Blocks
         if (teamsList) {
             teamsList.innerHTML = teams.map(t => `
                 <a href="team-details.html?id=${t.id}" class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all group shadow-sm">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 w-12 h-12 flex items-center justify-center rounded-2xl mb-6 text-blue-600"><i data-lucide="shield" class="w-6 h-6"></i></div>
                     <h3 class="text-2xl font-black group-hover:text-blue-600 transition">${t.name}</h3>
                     <p class="text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest">Coach: ${t.coach_name || 'TBD'}</p>
                 </a>`).join('');
         }
-
-        // Render Sidebar Team Links (Standard Dark Sidebar Style)
         if (sidebarTeams) {
             sidebarTeams.innerHTML = teams.map(t => `
                 <a href="team-details.html?id=${t.id}" class="block p-3 rounded-xl text-sm font-bold ${teamId == t.id ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-slate-800 text-slate-400'} transition">
                     ${t.name}
                 </a>`).join('');
         }
-
-        // Render Admin Management List
         if (adminTeamsList) {
             adminTeamsList.innerHTML = teams.map(t => `
                 <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -64,14 +60,12 @@ async function loadAllData() {
                     </div>
                 </div>`).join('');
         }
-
-        // Populate Dropdowns
         if (teamSelect) {
             teamSelect.innerHTML = '<option value="">Select Team...</option>' + teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
     }
 
-    // B. FETCH TEAM ROSTER (Team Details Page)
+    // B. FETCH TEAM ROSTER
     if (teamId && rosterList) {
         const team = teams?.find(t => t.id == teamId);
         if (team) teamHeader.innerHTML = `<h1 class="text-6xl font-black tracking-tighter">${team.name}</h1><p class="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[.3em] mt-2 text-xs">Coach: ${team.coach_name}</p>`;
@@ -86,7 +80,7 @@ async function loadAllData() {
             </tr>`).join('');
     }
 
-    // C. FETCH ALL PLAYERS (Admin Management List)
+    // C. FETCH ALL PLAYERS (Admin)
     if (adminPlayersList) {
         const { data: allPlayers } = await db.from('players').select('*, teams(name)').order('name');
         adminPlayersList.innerHTML = allPlayers.map(p => `
@@ -100,26 +94,55 @@ async function loadAllData() {
             </tr>`).join('');
     }
 
-    // D. FETCH DOCUMENTS (Grouped by Category)
+    // D. FETCH DOCUMENTS
     if (docsList) {
         const { data: docs } = await db.from('documents').select('*').order('created_at', { ascending: false });
         if (docs) {
             const groups = {};
             docs.forEach(d => { if (!groups[d.category]) groups[d.category] = []; groups[d.category].push(d); });
             docsList.innerHTML = Object.keys(groups).map(cat => `
-                <div class="mb-10">
+                <div class="mb-10 text-left">
                     <h3 class="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[.3em] mb-4">${cat}</h3>
                     <div class="space-y-2">
                         ${groups[cat].map(doc => `
                         <a href="${doc.file_url}" target="_blank" class="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-orange-500 transition group">
                             <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg text-orange-600"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-                            <span class="text-sm font-bold flex-1">${doc.title}</span>
+                            <span class="text-sm font-bold flex-1 text-left">${doc.title}</span>
                             <i data-lucide="download" class="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition"></i>
                         </a>`).join('')}
                     </div>
                 </div>`).join('');
         }
     }
+
+    // E. FETCH FORUM POSTS
+    if (forumList || adminForumList) {
+        const { data: posts } = await db.from('forum_posts').select('*').order('created_at', { ascending: false });
+        if (posts) {
+            if (forumList) {
+                forumList.innerHTML = posts.map(p => `
+                    <article class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white">${p.title}</h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">${new Date(p.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">${p.content}</p>
+                        <div class="flex items-center gap-2 italic text-xs text-slate-500 font-bold">
+                            <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center text-[10px] font-black">${p.author_name[0]}</div>
+                            Posted by ${p.author_name}
+                        </div>
+                    </article>`).join('');
+            }
+            if (adminForumList) {
+                adminForumList.innerHTML = posts.map(p => `
+                    <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div class="text-left"><p class="font-bold text-sm">${p.title}</p><p class="text-[10px] text-slate-500 italic">by ${p.author_name}</p></div>
+                        <button onclick="window.deletePost(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>`).join('');
+            }
+        }
+    }
+
     lucide.createIcons();
 }
 
@@ -163,39 +186,51 @@ function setupForms() {
         });
     }
 
-    // B. MANUAL TEAM FORM
+    // B. FORUM FORM
+    const forumForm = document.getElementById('forum-form');
+    if (forumForm) {
+        forumForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                author_name: document.getElementById('post-author').value.trim(),
+                title: document.getElementById('post-title').value.trim(),
+                content: document.getElementById('post-content').value.trim()
+            };
+            const { error } = await db.from('forum_posts').insert([payload]);
+            if (error) alert(error.message); else location.reload();
+        });
+    }
+
+    // C. MANUAL TEAM FORM
     const teamForm = document.getElementById('team-form');
     if (teamForm) {
         teamForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('team-name').value.trim();
             const coach = document.getElementById('coach-name').value.trim();
-            const { data: exists } = await db.from('teams').select('id').ilike('name', name);
-            if (exists?.length) return alert("Team name exists.");
             await db.from('teams').insert([{ name, coach_name: coach }]);
             location.reload();
         });
     }
 
-    // C. MANUAL PLAYER FORM
+    // D. MANUAL PLAYER FORM
     const playerForm = document.getElementById('player-form');
     if (playerForm) {
         playerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const team_id = parseInt(document.getElementById('team-select').value);
-            const name = document.getElementById('player-name').value.trim();
             const payload = {
-                team_id, name,
+                team_id: parseInt(document.getElementById('team-select').value),
+                name: document.getElementById('player-name').value.trim(),
                 age: parseInt(document.getElementById('player-age').value) || null,
                 position: document.getElementById('player-pos').value.trim(),
                 phone_number: document.getElementById('player-phone').value.trim()
             };
-            const { error } = await db.from('players').insert([payload]);
-            if (error) alert(error.message); else { alert("Added!"); playerForm.reset(); loadAllData(); }
+            await db.from('players').insert([payload]);
+            alert("Added!"); playerForm.reset(); loadAllData();
         });
     }
 
-    // D. DOCUMENT UPLOAD
+    // E. DOCUMENT UPLOAD
     const docForm = document.getElementById('doc-form');
     if (docForm) {
         docForm.addEventListener('submit', async (e) => {
@@ -210,73 +245,9 @@ function setupForms() {
             location.reload();
         });
     }
-
-    // 1. Inside loadAllData() function:
-    const forumList = document.getElementById('forum-list');
-    const adminForumList = document.getElementById('admin-forum-list');
-
-    if (forumList || adminForumList) {
-        const { data: posts, error } = await db.from('forum_posts').select('*').order('created_at', { ascending: false });
-        
-        if (posts) {
-            if (forumList) {
-                forumList.innerHTML = posts.map(p => `
-                    <article class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-black text-slate-800 dark:text-white">${p.title}</h3>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase">${new Date(p.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">${p.content}</p>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold">
-                                ${p.author_name[0]}
-                            </div>
-                            <span class="text-xs font-bold text-slate-500 italic">Posted by ${p.author_name}</span>
-                        </div>
-                    </article>
-                `).join('');
-            }
-
-            if (adminForumList) {
-                adminForumList.innerHTML = posts.map(p => `
-                    <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <div>
-                            <p class="font-bold text-sm">${p.title}</p>
-                            <p class="text-[10px] text-slate-500 italic">by ${p.author_name}</p>
-                        </div>
-                        <button onclick="window.deletePost(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `).join('');
-            }
-        }
-    }
-
-    // 2. Inside setupForms() function:
-    const forumForm = document.getElementById('forum-form');
-    if (forumForm) {
-        forumForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                author_name: document.getElementById('post-author').value,
-                title: document.getElementById('post-title').value,
-                content: document.getElementById('post-content').value
-            };
-            const { error } = await db.from('forum_posts').insert([payload]);
-            if (error) alert(error.message);
-            else location.reload();
-        });
-    }
-
-    // 3. At the bottom under Global Management Actions:
-    window.deletePost = async (id) => {
-        if (!confirm("Delete this forum post?")) return;
-        await db.from('forum_posts').delete().eq('id', id);
-        location.reload();
-    };
-
 }
 
-// 5. UTILITIES
+// 5. UTILITIES & GLOBAL ACTIONS
 function setupThemeToggle() {
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.addEventListener('click', () => {
@@ -285,16 +256,15 @@ function setupThemeToggle() {
     });
 }
 
-// 6. GLOBAL MANAGEMENT ACTIONS (Window scope)
-window.deleteTeam = async (id) => { if (confirm("Delete team and all players?")) { await db.from('teams').delete().eq('id', id); location.reload(); } };
+window.deleteTeam = async (id) => { if (confirm("Delete team?")) { await db.from('teams').delete().eq('id', id); location.reload(); } };
 window.editTeam = async (id, name) => { const n = prompt("Rename:", name); if (n) { await db.from('teams').update({ name: n }).eq('id', id); location.reload(); } };
 window.deletePlayer = async (id) => { if (confirm("Delete player?")) { await db.from('players').delete().eq('id', id); location.reload(); } };
+window.deletePost = async (id) => { if (confirm("Delete post?")) { await db.from('forum_posts').delete().eq('id', id); location.reload(); } };
 
 window.editPlayer = async (id) => {
     const modal = document.getElementById('edit-modal');
     const { data: p } = await db.from('players').select('*').eq('id', id).single();
     const { data: teams } = await db.from('teams').select('id, name').order('name');
-    
     document.getElementById('edit-player-team').innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === p.team_id ? 'selected' : ''}>${t.name}</option>`).join('');
     document.getElementById('edit-player-id').value = p.id;
     document.getElementById('edit-player-name').value = p.name;
@@ -316,8 +286,8 @@ window.savePlayerEdit = async function() {
         position: document.getElementById('edit-player-pos').value,
         phone_number: document.getElementById('edit-player-phone').value
     };
-    const { error } = await db.from('players').update(updates).eq('id', id);
-    if (error) alert(error.message); else { window.closeModal(); location.reload(); }
+    await db.from('players').update(updates).eq('id', id);
+    window.closeModal(); location.reload();
 };
 
 window.addEventListener('load', init);
