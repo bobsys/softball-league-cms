@@ -116,10 +116,16 @@ async function loadAllData() {
             adminTeamsList.innerHTML = teams.map(t => `
                 <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                     <span class="font-bold text-sm">${t.name}</span>
-                    <button onclick="window.deleteTeam(${t.id})" class="p-2 text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <div class="flex gap-1">
+                        <button onclick="window.editTeam(${t.id}, '${t.name.replace(/'/g, "\\'")}')" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="window.deleteTeam(${t.id})" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>`).join('');
-        }
-        // Admin Dropdowns
+        }        // Admin Dropdowns
         if (teamSelect) teamSelect.innerHTML = '<option value="">Select Team...</option>' + teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
 
