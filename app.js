@@ -21,7 +21,6 @@ function renderHeader() {
     if (!headerWrap) return;
 
     const path = window.location.pathname;
-    // Page detection
     const isHome = path.endsWith('index.html') || path === '/' || path.endsWith('team-details.html');
     const isForum = path.endsWith('forum.html');
     const isAdmin = path.endsWith('admin.html');
@@ -29,11 +28,12 @@ function renderHeader() {
     const activeClass = "text-blue-600 dark:text-blue-400 font-black cursor-default border-b-2 border-blue-600 pb-1";
     const inactiveClass = "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition";
 
+    // Changed to 'fixed' and added 'w-full' to ensure it stays on top of everything
     headerWrap.innerHTML = `
-    <nav class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
+    <nav class="fixed top-0 left-0 w-full z-[100] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
         <div class="max-w-full mx-auto px-6 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3 group">
-                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="ISS Logo" class="w-10 h-10 rounded-full border-2 border-blue-600 transition group-hover:scale-105">
+                <img src="YOUR_LOGO_URL" alt="ISS Logo" class="w-10 h-10 rounded-full border-2 border-blue-600 transition group-hover:scale-105">
                 <div>
                     <span class="font-black text-lg tracking-tighter block leading-none dark:text-white uppercase">Irondequoit</span>
                     <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Senior Softball</span>
@@ -56,12 +56,16 @@ function renderHeader() {
                 </div>
             </div>
         </div>
-    </nav>`;
+    </nav>
+    <div class="h-[64px]"></div> <!-- Spacer so content doesn't hide under the fixed nav -->
+    `;
     lucide.createIcons();
 }
 
 // 4. DATA LOADING
+// 3. DATA LOADING & RENDERING (The "Brain")
 async function loadAllData() {
+    // 1. Define all elements we need to find on the page
     const teamsList = document.getElementById('teams-list');
     const adminTeamsList = document.getElementById('admin-teams-list');
     const adminPlayersList = document.getElementById('admin-players-list');
@@ -73,11 +77,12 @@ async function loadAllData() {
     const annList = document.getElementById('announcements-list');
     const forumList = document.getElementById('forum-list');
     const adminForumList = document.getElementById('admin-forum-list');
+    const emailAllBtn = document.getElementById('email-all-players');
 
     const urlParams = new URLSearchParams(window.location.search);
     const teamId = urlParams.get('id');
 
-    // FIELD STATUS FETCH
+    // 2. FIELD STATUS (On Home Page)
     const { data: statusData } = await db.from('settings').select('value').eq('id', 'field_status').single();
     const statusBox = document.getElementById('field-status-box');
     if (statusBox && statusData) {
@@ -88,97 +93,176 @@ async function loadAllData() {
             </div>`;
     }
 
-    // TEAMS FETCH
+    // 3. FETCH & PROCESS TEAMS
     const { data: teams } = await db.from('teams').select('*').order('name');
     if (teams) {
+        // Homepage Blocks
         if (teamsList) {
             teamsList.innerHTML = teams.map(t => `
-                <a href="team-details.html?id=${t.id}" class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all shadow-sm">
-                    <h3 class="text-2xl font-black">${t.name}</h3>
+                <a href="team-details.html?id=${t.id}" class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all group shadow-sm text-left">
+                    <h3 class="text-2xl font-black group-hover:text-blue-600 transition">${t.name}</h3>
                     <p class="text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest">Coach: ${t.coach_name || 'TBD'}</p>
                 </a>`).join('');
         }
+        // Team Details Sidebar
         if (sidebarTeams) {
             sidebarTeams.innerHTML = teams.map(t => `
-                <a href="team-details.html?id=${t.id}" class="block p-3 rounded-xl text-sm font-bold ${teamId == t.id ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-400'} transition">${t.name}</a>`).join('');
+                <a href="team-details.html?id=${t.id}" class="block p-3 rounded-xl text-sm font-bold ${teamId == t.id ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-slate-800 text-slate-400'} transition">
+                    ${t.name}
+                </a>`).join('');
         }
+        // Admin Management List
         if (adminTeamsList) {
-            adminTeamsList.innerHTML = teams.map(t => `<div class="flex justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800"><span class="font-bold text-sm">${t.name}</span><button onclick="window.deleteTeam(${t.id})" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
+            adminTeamsList.innerHTML = teams.map(t => `
+                <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span class="font-bold text-sm">${t.name}</span>
+                    <button onclick="window.deleteTeam(${t.id})" class="p-2 text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>`).join('');
         }
+        // Admin Dropdowns
         if (teamSelect) teamSelect.innerHTML = '<option value="">Select Team...</option>' + teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
 
-    // ROSTER & TEAM EMAIL
+    // 4. ROSTER & EMAIL TEAM (Team Details Page)
     if (teamId && rosterList) {
         const team = teams?.find(t => t.id == teamId);
         const { data: players } = await db.from('players').select('*').eq('team_id', teamId).order('name');
-        if (team) {
-            const emails = players.map(p => p.email).filter(e => e && e !== 'N/A').join(',');
+        
+        if (team && players) {
+            // Filter valid emails
+            const validEmails = players
+                .map(p => p.email ? p.email.trim() : "")
+                .filter(e => e !== "" && e.toLowerCase() !== "n/a" && e.includes("@"));
+
+            const emailString = validEmails.join(',');
+
             teamHeader.innerHTML = `
                 <div class="flex justify-between items-end mb-8">
-                    <div><h1 class="text-6xl font-black tracking-tighter">${team.name}</h1><p class="text-blue-600 font-bold uppercase tracking-[.3em] mt-2 text-xs">Coach: ${team.coach_name}</p></div>
-                    <a href="mailto:?bcc=${emails}" class="bg-blue-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg">Email Team</a>
+                    <div>
+                        <h1 class="text-6xl font-black tracking-tighter">${team.name}</h1>
+                        <p class="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[.3em] mt-2 text-xs">Coach: ${team.coach_name}</p>
+                    </div>
+                    ${emailString ? `
+                        <a href="mailto:?bcc=${encodeURIComponent(emailString)}" class="bg-blue-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg">
+                            Email Team (${validEmails.length})
+                        </a>
+                    ` : `<span class="text-[10px] font-bold text-slate-400 italic">No Emails Available</span>`}
                 </div>`;
         }
+
         rosterList.innerHTML = players.map(p => `
             <tr class="border-b border-slate-100 dark:border-slate-800">
                 <td class="p-5 font-bold">${p.name}</td>
-                <td class="p-5 text-center text-slate-500">${p.position || '--'}</td>
-                <td class="p-5 text-center text-slate-500">${p.age || '--'}</td>
-                <td class="p-5 text-center font-mono text-blue-600 text-xs font-bold">${p.phone_number || '--'}</td>
+                <td class="p-5 text-center text-slate-500 font-medium">${p.position || '--'}</td>
+                <td class="p-5 text-center text-slate-500 font-medium">${p.age || '--'}</td>
+                <td class="p-5 text-center font-mono text-blue-600 dark:text-blue-400 text-xs font-bold">${p.phone_number || '--'}</td>
             </tr>`).join('');
     }
 
-    // EMAIL ALL (Admin Page)
-    const emailAllBtn = document.getElementById('email-all-players');
+    // 5. EMAIL ALL PLAYERS (Admin Page)
     if (emailAllBtn) {
         const { data: allPlayers } = await db.from('players').select('email');
-        const allEmails = allPlayers.map(p => p.email).filter(e => e && e !== 'N/A').join(',');
-        emailAllBtn.href = `mailto:?bcc=${allEmails}`;
+        if (allPlayers) {
+            const allValidEmails = allPlayers
+                .map(p => p.email ? p.email.trim() : "")
+                .filter(e => e !== "" && e.toLowerCase() !== "n/a" && e.includes("@"));
+            
+            const allEmailString = allValidEmails.join(',');
+            emailAllBtn.href = `mailto:?bcc=${encodeURIComponent(allEmailString)}`;
+            emailAllBtn.innerText = `Email Entire League (${allValidEmails.length})`;
+        }
     }
 
-    // ADMIN PLAYER LIST
+    // 6. ADMIN PLAYER LIST
     if (adminPlayersList) {
         const { data: allPlayers } = await db.from('players').select('*, teams(name)').order('name');
-        adminPlayersList.innerHTML = allPlayers.map(p => `
-            <tr><td class="p-4 font-bold text-sm">${p.name}</td><td class="p-4 text-[10px] uppercase font-black text-slate-400">${p.teams?.name || 'Unassigned'}</td><td class="p-4 text-right"><button onclick="window.editPlayer(${p.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button><button onclick="window.deletePlayer(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
+        if (allPlayers) {
+            adminPlayersList.innerHTML = allPlayers.map(p => `
+                <tr>
+                    <td class="p-4 font-bold text-sm">${p.name}</td>
+                    <td class="p-4 text-[10px] uppercase font-black text-slate-400">${p.teams?.name || 'Unassigned'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="window.editPlayer(${p.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                        <button onclick="window.deletePlayer(${p.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>`).join('');
+        }
     }
 
-    // DOCUMENTS
+    // 7. FETCH DOCUMENTS (Grouped by Category)
     if (docsList) {
         const { data: docs } = await db.from('documents').select('*').order('created_at', { ascending: false });
         if (docs) {
             const groups = {};
             docs.forEach(d => { if (!groups[d.category]) groups[d.category] = []; groups[d.category].push(d); });
             docsList.innerHTML = Object.keys(groups).map(cat => `
-                <div class="mb-10 text-left"><h3 class="text-[10px] font-black uppercase text-slate-400 tracking-[.3em] mb-4">${cat}</h3><div class="space-y-2">
-                ${groups[cat].map(doc => `<a href="${doc.file_url}" target="_blank" class="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-orange-500 transition group"><i data-lucide="file-text" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-bold flex-1">${doc.title}</span><i data-lucide="download" class="w-4 h-4 text-slate-300 group-hover:text-orange-500"></i></a>`).join('')}</div></div>`).join('');
+                <div class="mb-10 text-left">
+                    <h3 class="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[.3em] mb-4">${cat}</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${groups[cat].map(doc => `
+                        <a href="${doc.file_url}" target="_blank" class="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-orange-500 transition group">
+                            <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg text-orange-600"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-bold flex-1 text-left">${doc.title}</span>
+                            <i data-lucide="download" class="w-4 h-4 text-slate-300 group-hover:text-orange-500 transition"></i>
+                        </a>`).join('')}
+                    </div>
+                </div>`).join('');
         }
     }
 
-    // FORUM & ANNOUNCEMENTS
+    // 8. FETCH FORUM & ANNOUNCEMENTS
     if (annList || forumList || adminForumList) {
         const { data: allPosts } = await db.from('forum_posts').select('*').order('created_at', { ascending: false });
         if (allPosts) {
+            // Announcements
             if (annList) {
                 const news = allPosts.filter(p => p.post_type === 'announcement');
-                annList.innerHTML = news.map(p => `<article class="bg-white dark:bg-slate-900 p-8 rounded-3xl border-l-4 border-l-blue-600 shadow-sm text-left"><h3 class="text-2xl font-black mb-2">${p.title}</h3><p class="text-sm text-slate-600 dark:text-slate-400 mb-4">${p.content}</p><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Update • ${new Date(p.created_at).toLocaleDateString()}</span></article>`).join('');
+                annList.innerHTML = news.map(p => `
+                    <article class="bg-white dark:bg-slate-900 p-8 rounded-3xl border-l-4 border-l-blue-600 shadow-sm text-left mb-4">
+                        <h3 class="text-2xl font-black mb-2">${p.title}</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">${p.content}</p>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Update • ${new Date(p.created_at).toLocaleDateString()}</span>
+                    </article>`).join('');
             }
+            // Forum Threads
             if (forumList) {
                 const topLevel = allPosts.filter(p => p.post_type !== 'announcement' && !p.parent_id);
                 forumList.innerHTML = topLevel.map(p => {
                     const replies = allPosts.filter(r => r.parent_id === p.id);
-                    return `<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8 text-left"><div class="p-8"><h3 class="text-2xl font-black mb-2">${p.title}</h3><p class="text-sm text-slate-600 dark:text-slate-400 mb-6">${p.content}</p><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-400 italic">Posted by ${p.author_name}</span><button onclick="window.openReplyModal(${p.id}, '${p.title}')" class="text-xs font-black text-blue-600 uppercase tracking-widest">Reply</button></div></div>${replies.length ? `<div class="bg-slate-50 dark:bg-slate-800/30 p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">${replies.map(r => `<div class="pl-4 border-l-2 border-slate-200 dark:border-slate-700"><p class="text-xs text-slate-600 dark:text-slate-300 font-medium">${r.content}</p><p class="text-[9px] font-bold text-slate-400 uppercase mt-1">— ${r.author_name}</p></div>`).join('')}</div>` : ''}</div>`;
+                    return `
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8 text-left">
+                        <div class="p-8">
+                            <h3 class="text-2xl font-black mb-2">${p.title}</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">${p.content}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-slate-400 italic">Posted by ${p.author_name}</span>
+                                <button onclick="window.openReplyModal(${p.id}, '${p.title}')" class="text-xs font-black text-blue-600 uppercase tracking-widest">Reply</button>
+                            </div>
+                        </div>
+                        ${replies.length ? `
+                        <div class="bg-slate-50 dark:bg-slate-800/30 p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                            ${replies.map(r => `
+                                <div class="pl-4 border-l-2 border-slate-200 dark:border-slate-700 text-left">
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 font-medium">${r.content}</p>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">— ${r.author_name}</p>
+                                </div>`).join('')}
+                        </div>` : ''}
+                    </div>`;
                 }).join('');
             }
+            // Admin Moderation
             if (adminForumList) {
-                adminForumList.innerHTML = allPosts.map(p => `<div class="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200"><div class="text-left"><p class="font-bold text-sm">${p.title || 'Reply'}</p></div><button onclick="window.deletePost(${p.id})" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
+                adminForumList.innerHTML = allPosts.map(p => `
+                    <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-2">
+                        <div class="text-left"><p class="font-bold text-sm">${p.title || 'Reply'}</p><p class="text-[10px] text-slate-500 italic">by ${p.author_name}</p></div>
+                        <button onclick="window.deletePost(${p.id})" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>`).join('');
             }
         }
     }
+
     lucide.createIcons();
 }
-
 // 5. FORMS
 function setupForms() {
     const importBtn = document.getElementById('import-btn');
