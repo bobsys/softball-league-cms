@@ -71,6 +71,10 @@
                 <button onclick="document.getElementById('post-modal').classList.add('hidden')"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <form id="forum-form" class="p-6 space-y-4">
+                <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-4">
+                    <input type="checkbox" id="post-is-announcement" class="w-4 h-4 rounded border-slate-300">
+                    <label for="post-is-announcement" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Post as Official Announcement (Blog Mode)</label>
+                </div>
                 <input type="text" id="post-author" placeholder="Your Name" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" required>
                 <input type="text" id="post-title" placeholder="Topic Title" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" required>
                 <textarea id="post-content" rows="5" placeholder="What's on your mind?" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-medium" required></textarea>
