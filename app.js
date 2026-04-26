@@ -258,22 +258,42 @@ function setupForms() {
     }
 
     // BATCH IMPORT
-    const importBtn = document.getElementById('import-btn');
-    if (importBtn) {
-        importBtn.addEventListener('click', async () => {
-            const text = document.getElementById('import-area').value;
-            if (!text.trim()) return;
-            importBtn.innerText = "Processing..."; importBtn.disabled = true;
+// Locate this inside setupForms() in app.js
+const importBtn = document.getElementById('import-btn');
+if (importBtn) {
+    importBtn.addEventListener('click', async () => {
+        const text = document.getElementById('import-area').value;
+        if (!text.trim()) return alert("Please paste the roster text first.");
+
+        // 1. CONFIRMATION
+        const confirmClear = confirm("This will DELETE ALL existing teams and players to perform a clean import. Are you sure you want to proceed?");
+        if (!confirmClear) return;
+
+        importBtn.innerText = "Clearing Old Data...";
+        importBtn.disabled = true;
+
+        try {
+            // 2. WIPE THE SLATE
+            // Delete players first (because they are linked to teams)
+            await db.from('players').delete().neq('id', 0);
+            // Then delete the teams
+            await db.from('teams').delete().neq('id', 0);
+
+            importBtn.innerText = "Processing New Roster...";
+            
+            // 3. START THE IMPORT LOOP (Existing parsing logic)
             const blocks = text.split(/MANAGER:/g).filter(b => b.trim().length > 10);
             for (let block of blocks) {
                 const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
                 const manager = lines[0].replace(/-+/g, '').trim();
-                let { data: team } = await db.from('teams').select('id').ilike('name', manager).maybeSingle();
-                if (!team) {
-                    const { data: nt } = await db.from('teams').insert([{ name: manager, coach_name: manager }]).select().single();
-                    team = nt;
-                }
+                
+                // Create Team
+                const { data: nt, error: teamErr } = await db.from('teams').insert([{ name: manager, coach_name: manager }]).select().single();
+                if (teamErr) { console.error("Team Error:", teamErr); continue; }
+                
+                const team = nt;
                 let currentPlayer = null;
+
                 for (let line of lines) {
                     if (/^\d+\.\s+/.test(line)) {
                         if (currentPlayer) await db.from('players').insert([currentPlayer]);
@@ -291,12 +311,21 @@ function setupForms() {
                         if (m) currentPlayer.position = m[1];
                     }
                 }
+                // Save the final player of the team block
                 if (currentPlayer) await db.from('players').insert([currentPlayer]);
             }
+
+            alert("Clean import successful!");
             location.reload();
-        });
-    }
-}
+
+        } catch (err) {
+            console.error("Import failed:", err);
+            alert("An error occurred during the import process.");
+            importBtn.disabled = false;
+            importBtn.innerText = "Run Bulk Import";
+        }
+    });
+}}
 
 // 6. UTILITIES & GLOBAL ACTIONS
 function setupThemeToggle() {
