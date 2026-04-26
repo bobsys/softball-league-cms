@@ -37,7 +37,7 @@ async function renderHeader() {
     <nav class="fixed top-0 left-0 w-full z-[100] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
         <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3 group">
-                <img src="YOUR_LOGO_URL" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600">
+                <img src="https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600">
                 <div class="hidden sm:block">
                     <span class="font-black text-lg tracking-tighter block leading-none dark:text-white uppercase text-left">Irondequoit</span>
                     <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest leading-none block text-left">Senior Softball</span>
