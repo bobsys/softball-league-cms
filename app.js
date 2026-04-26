@@ -90,7 +90,8 @@ async function loadAllData() {
                 </a>`).join('');
         }
         if (sidebarTeams) {
-            sidebarTeams.innerHTML = teams.map(t => `<a href="team-details.html?id=${t.id}" class="block p-3 rounded-xl text-sm font-bold ${teamId == t.id ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-slate-800 text-slate-400'} transition text-left">${t.name}</a>`).join('');
+            sidebarTeams.innerHTML = teams.map(t => `
+        <a href="team-details.html?id=${t.id}" class="block p-3 rounded-xl text-sm font-bold ${teamId == t.id ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600'} transition text-left">${t.name}</a>`).join('');
         }
         if (adminTeamsList) {
             adminTeamsList.innerHTML = teams.map(t => `<div class="flex justify-between items-center bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-2"><span class="font-bold text-sm">${t.name}</span><div class="flex gap-1"><button onclick="window.editTeam(${t.id},'${t.name.replace(/'/g, "\\'")}')" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button><button onclick="window.deleteTeam(${t.id})" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('');
