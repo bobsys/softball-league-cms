@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Irondequoit Senior Softball</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Irondequoit Senior Softball</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -13,59 +12,30 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Custom Light Mode Colors (Grays & Light Blues) -->
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .light body { background-color: #f1f5f9; } /* Slate 100 */
-        .light .card-bg { background-color: #ffffff; border-color: #e2e8f0; }
-        .light .accent-bg { background-color: #eff6ff; } /* Blue 50 */
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
     <div id="header-wrap"></div>
-
     <main class="max-w-7xl mx-auto px-6 py-12 space-y-12">
-        
-        <!-- ROW 1: NEWS & RESOURCES -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <!-- Left: Blog/Announcements (2/3 width) -->
             <div class="lg:col-span-2">
                 <section id="announcements-section">
-                    <h2 class="text-2xl font-black mb-8 flex items-center gap-3">
-                        <i data-lucide="megaphone" class="text-blue-600"></i> League News
-                    </h2>
-                    <div id="announcements-list" class="space-y-4">
-                        <!-- News items injected here -->
-                    </div>
+                    <h2 class="text-2xl font-black mb-8 flex items-center gap-3"><i data-lucide="megaphone" class="text-blue-600"></i> League News</h2>
+                    <div id="announcements-list" class="space-y-4"></div>
                 </section>
             </div>
-
-            <!-- Right: Resources (1/3 width) -->
             <div>
                 <section id="documents-section">
-                    <h2 class="text-2xl font-black mb-8 flex items-center gap-3 text-left">
-                        <i data-lucide="file-text" class="text-orange-500"></i> Resources
-                    </h2>
-                    <div id="docs-list" class="space-y-4">
-                        <!-- Docs injected here -->
-                    </div>
+                    <h2 class="text-2xl font-black mb-8 flex items-center gap-3"><i data-lucide="file-text" class="text-orange-500"></i> Resources</h2>
+                    <div id="docs-list" class="space-y-4"></div>
                 </section>
             </div>
         </div>
-
-        <!-- ROW 2: TEAMS (Full Width) -->
         <section id="teams-section" class="pt-12 border-t border-slate-200 dark:border-slate-800">
-            <h2 class="text-2xl font-black mb-8 flex items-center gap-3">
-                <i data-lucide="shield" class="text-blue-600"></i> League Teams
-            </h2>
-            <div id="teams-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                <!-- Teams injected here -->
-            </div>
+            <h2 class="text-2xl font-black mb-8 flex items-center gap-3"><i data-lucide="shield" class="text-blue-600"></i> League Teams</h2>
+            <div id="teams-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
         </section>
-
     </main>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
