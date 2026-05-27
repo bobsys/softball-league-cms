@@ -1,7 +1,7 @@
 const SUPABASE_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CXlvnbzmTyV_HuRVJNnB1A_SjRqfO2K';
 const YOUR_LOGO_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png';
-const VERSION_ID = '2024-05-27 09:14 PM'; // 
+const VERSION_ID = '2024-05-27 09:31 PM'; // 
   
 let db;
 
@@ -28,7 +28,54 @@ async function renderHeader(user) {
     const statusHtml = (isHome && s) ? `<div class="flex items-center gap-2 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${s.value === 'ON' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200'}">Games are ${s.value === 'ON' ? 'ON' : 'CANCELLED'}</div>` : '';
     const active = "text-blue-600 dark:text-blue-400 font-black cursor-default border-b-2 border-blue-600 pb-1";
     const inactive = "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition";
-    wrap.innerHTML = `<nav class="fixed top-0 left-0 w-full z-[100] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2"><div class="max-w-7xl mx-auto px-6 flex justify-between items-center"><a href="index.html" class="flex items-center gap-3"><img src="${YOUR_LOGO_URL}" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600"><div><span class="font-black text-lg dark:text-white uppercase">Irondequoit</span><span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest block">Senior Softball</span></div></a><div class="flex items-center gap-6">${statusHtml}<div class="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest items-center">${isHome ? '' : `<a href="index.html" class="${inactive}">Home</a>`}${isForum ? `<span class="${active}">Forum</span>` : `<a href="forum.html" class="${inactive}">Forum</a>`}</div><div class="flex items-center gap-4 border-l pl-6 dark:border-slate-800"><button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:ring-2 ring-blue-500 transition"><i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i></button>${user ? `<div class="flex items-center gap-3">${isAdmin ? `<span class="bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</span>` : `<a href="admin.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</a>`}<button onclick="window.handleSignOut()" class="text-slate-400 hover:text-red-500"><i data-lucide="log-out" class="w-4 h-4"></i></button></div>` : `${isLogin ? `<span class="${active}">Login</span>` : `<a href="login.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase hover:bg-slate-800 transition">Login</a>`}`}</div></div></div></nav><div class="h-[64px]"></div>`;
+
+    let authSectionHtml;
+    if (user) {
+        authSectionHtml = `
+            <div class="flex items-center gap-3">
+                ${isAdmin ? `
+                    <span class="bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</span>` : `
+                    <a href="admin.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</a>`}
+                <button onclick="window.handleSignOut()" class="text-slate-400 hover:text-red-500">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>`;
+    } else {
+        authSectionHtml = `
+            ${isLogin ? `
+                <span class="${active}">Login</span>` : `
+                <a href="login.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase hover:bg-slate-800 transition">Login</a>`}
+        `;
+    }
+
+    wrap.innerHTML = `
+        <nav class="fixed top-0 left-0 w-full z-[100] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-2">
+            <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="${YOUR_LOGO_URL}" alt="Logo" class="w-10 h-10 rounded-full border-2 border-blue-600">
+                    <div>
+                        <span class="font-black text-lg dark:text-white uppercase">Irondequoit</span>
+                        <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest block">Senior Softball</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-6">
+                    ${statusHtml}
+                    <div class="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest items-center">
+                        ${isHome ? '' : `<a href="index.html" class="${inactive}">Home</a>`}
+                        ${isForum ? `<span class="${active}">Forum</span>` : `<a href="forum.html" class="${inactive}">Forum</a>`}
+                    </div>
+                    <div class="flex items-center gap-4 border-l pl-6 dark:border-slate-800">
+                        <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:ring-2 ring-blue-500 transition">
+                            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                            <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                        </button>
+                        ${authSectionHtml}
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="h-[64px]"></div>
+    `;
     if (isAdmin) { const v = document.getElementById('version-tag'); if (v) v.innerText = `Build: ${VERSION_ID}`; }
     lucide.createIcons();
 }
