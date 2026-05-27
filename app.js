@@ -1,8 +1,8 @@
 const SUPABASE_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CXlvnbzmTyV_HuRVJNnB1A_SjRqfO2K';
 const YOUR_LOGO_URL = 'https://gwcfzujfyzusyuaazslx.supabase.co/storage/v1/object/public/league-documents/McAvoy%20Logo.png';
-const VERSION_ID = '2024-05-27 12:54 PM';
-
+const VERSION_ID = '2024-05-27 09:14 PM'; // 
+  
 let db;
 
 async function init() {
