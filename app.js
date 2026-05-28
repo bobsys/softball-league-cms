@@ -33,12 +33,10 @@ async function renderHeader(user) {
     if (user) {
         authSectionHtml = `
             <div class="flex items-center gap-3">
-                ${isAdmin ? `
-                    <span class="bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</span>` : `
-                    <a href="admin.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</a>`}
-                <button onclick="window.handleSignOut()" class="text-slate-400 hover:text-red-500">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                </button>
+            ${!isAdmin ? `<a href="admin.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">Admin</a>` : ''}
+            <button onclick="window.handleSignOut()" class="text-slate-400 hover:text-red-500">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
             </div>`;
     } else {
         authSectionHtml = `
