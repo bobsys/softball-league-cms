@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Irondequoit Senior Softball</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else { document.documentElement.classList.remove('dark') }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+    <div id="header-wrap"></div>
+
+    <main class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-8">
+            <div class="mb-8 text-center">
+                <h1 class="text-3xl font-black uppercase tracking-tight">Admin Login</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Manage teams, players, and announcements.</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div id="login-error" class="hidden p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold text-center"></div>
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+                    <input type="email" id="login-email" class="w-full p-4 mt-1 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" placeholder="your@email.com" required>
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
+                    <input type="password" id="login-password" class="w-full p-4 mt-1 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none border-none text-sm font-bold" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition uppercase text-xs tracking-widest">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
